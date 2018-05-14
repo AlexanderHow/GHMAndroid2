@@ -2,6 +2,8 @@ package com.td.fr.unice.polytech.ghmandroid;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
+import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.TweetAdapter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -31,8 +35,11 @@ public class TwitterExperiments extends AppCompatActivity {
 
     private EditText content;
     private Button send;
-    private ListView listView;
+    private RecyclerView listView;
     private Button refresh;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,8 +48,12 @@ public class TwitterExperiments extends AppCompatActivity {
 
         content = (EditText) findViewById(R.id.editText);
         send = (Button) findViewById(R.id.send);
-        listView = (ListView) findViewById(R.id.incidentsView);
+        listView = (RecyclerView) findViewById(R.id.tweetRecycle);
         refresh = (Button) findViewById(R.id.refresh);
+
+        listView.setHasFixedSize(true);
+        mLayoutManager = new LinearLayoutManager(this);
+        listView.setLayoutManager(mLayoutManager);
 
         TwitterConfig config = new TwitterConfig.Builder(this)
                 .logger(new DefaultLogger(Log.DEBUG))
@@ -81,6 +92,8 @@ public class TwitterExperiments extends AppCompatActivity {
                 for (Tweet t: result.data) {
                     Log.i("INFO : ", t.text);
                 }
+                TweetAdapter tweetAdapter = new TweetAdapter(result.data);
+                listView.setAdapter(tweetAdapter);
                 Log.i("TWITTER", "SUCCESS");
             }
 

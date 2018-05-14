@@ -3,8 +3,23 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.td.fr.unice.polytech.ghmandroid.MainActivity">
     <item
-        android:id="@+id/action_settings"
+        android:id="@+id/app_bar_switch"
+        android:orderInCategory="101"
+        android:title="Twitter"
+        app:showAsAction="always"
+        app:actionLayout="@layout/switch_item" />
+    <item
+        android:id="@+id/app_bar_search"
+        app:actionViewClass="android.widget.SearchView"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="100"
+        android:title="Search" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="102"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+
 </menu>

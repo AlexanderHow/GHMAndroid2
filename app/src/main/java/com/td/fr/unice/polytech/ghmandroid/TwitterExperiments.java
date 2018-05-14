@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.twitter.sdk.android.core.Callback;
@@ -21,6 +22,8 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
+
+import java.util.List;
 
 import retrofit2.Call;
 
@@ -57,7 +60,33 @@ public class TwitterExperiments extends AppCompatActivity {
                 touite();
             }
         });
-        
+
+        refresh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                getTouite();
+            }
+        });
+
+    }
+
+    public void getTouite() {
+        TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+        StatusesService statusesService = twitterApiClient.getStatusesService();
+        Call<List<Tweet>> call = statusesService.userTimeline(940556535897448448L, null, 50, null, null,
+                null, true, null, false);
+        call.enqueue(new Callback<List<Tweet>>() {
+            @Override
+            public void success(Result<List<Tweet>> result) {
+                ListAdapter listAdapter = new ListAdapter()
+                Log.i("TWITTER", "SUCCESS");
+            }
+
+            public void failure(TwitterException exception) {
+                //Do something on failure
+                Log.i("TWITTER", "FAILURE");
+            }
+        });
     }
 
     public void touite() {

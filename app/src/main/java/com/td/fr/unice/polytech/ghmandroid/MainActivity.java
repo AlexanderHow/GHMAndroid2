@@ -1,5 +1,9 @@
 package com.td.fr.unice.polytech.ghmandroid;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -20,8 +24,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
+import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
+import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,11 +48,16 @@ public class MainActivity extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private IncidentViewModel incidentViewModel;
+
+    public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -64,11 +78,29 @@ public class MainActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(MainActivity.this, addIncident.class);
+                startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
             }
         });
 
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
+            int urole = Integer.valueOf(data.getStringExtra("USERROLE").split("-")[0]);
+            int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
+            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
+            incidentViewModel.insert(incident);
+            System.out.println("I WAS HERE");
+            mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
+        } else {
+            Toast.makeText(
+                    getApplicationContext(),
+                    R.string.empty_not_saved,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
 
@@ -103,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+        private IncidentViewModel incidentViewModel;
 
         public PlaceholderFragment() {
         }
@@ -123,11 +156,19 @@ public class MainActivity extends AppCompatActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
             RecyclerView recyclerView = rootView.findViewById(R.id.recyclerview);
             final IncidentListAdapter adapter = new IncidentListAdapter(rootView.getContext());
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
-            //textView.setText(getString(R.string.section_format, getArguments().getInt(ARG_SECTION_NUMBER)));
+
+            incidentViewModel.getIncidentByAvancementAndAffecte(getArguments().getInt(ARG_SECTION_NUMBER),1).observe(this, new Observer<List<Incident>>() {
+                @Override
+                public void onChanged(@Nullable final List<Incident> incidents) {
+                    // Update the cached copy of the incidents in the adapter.
+                    adapter.setIncidents(incidents);
+                }
+            });
             return rootView;
         }
     }

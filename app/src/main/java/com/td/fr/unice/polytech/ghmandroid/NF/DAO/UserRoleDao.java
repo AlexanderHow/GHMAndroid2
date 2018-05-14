@@ -24,4 +24,7 @@ public interface UserRoleDao {
 
     @Query("SELECT * FROM userrole_table WHERE id = :urid")
     UserRole getUserById(int urid);
+
+    @Query("DELETE FROM userrole_table")
+    void deleteAll();
 }

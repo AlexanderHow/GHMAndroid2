@@ -23,4 +23,7 @@ public interface UserDao {
 
     @Query("SELECT * FROM user_table WHERE id = :uid")
     User getUserById(int uid);
+
+    @Query("DELETE FROM user_table")
+    void deleteAll();
 }

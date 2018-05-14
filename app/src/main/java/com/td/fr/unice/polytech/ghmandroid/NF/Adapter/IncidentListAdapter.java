@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 import com.td.fr.unice.polytech.ghmandroid.R;
@@ -17,11 +19,18 @@ import java.util.List;
 public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapter.IncidentViewHolder> {
 
     class IncidentViewHolder extends RecyclerView.ViewHolder {
-        //TODO private final TextView wordItemView;
+        private final TextView title;
+        private final TextView description;
 
         private IncidentViewHolder(View itemView) {
             super(itemView);
-            //TODO wordItemView = itemView.findViewById(R.id.textView);
+            title = (TextView)itemView.findViewById(R.id.titreIncidentCell);
+            description = (TextView)itemView.findViewById(R.id.descriptionIncidentCell);
+        }
+
+        public void setFields(String title, String desthcription){
+            this.title.setText(title);
+            this.description.setText(desthcription);
         }
     }
 
@@ -40,14 +49,14 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
     public void onBindViewHolder(IncidentViewHolder holder, int position) {
         if (mIncident != null) {
             Incident current = mIncident.get(position);
-            //TODO holder.wordItemView.setText(current.getWord());
+            holder.setFields(current.getTitre(),current.getDescription());
         } else {
             // Covers the case of data not being ready yet.
-            //TODO holder.wordItemView.setText("No Word");
+            holder.setFields("nothing", "nothing");
         }
     }
 
-    void setWords(List<Incident> incidents){
+    public void setIncidents(List<Incident> incidents){
         mIncident = incidents;
         notifyDataSetChanged();
     }

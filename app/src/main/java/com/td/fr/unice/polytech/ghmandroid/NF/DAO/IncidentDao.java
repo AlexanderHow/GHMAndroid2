@@ -28,4 +28,7 @@ public interface IncidentDao {
 
     @Query("UPDATE incident_table SET avancement = :newAvancement WHERE id = :iid")
     int updateAvancement(int iid, int newAvancement);
+
+    @Query("DELETE FROM incident_table")
+    void deleteAll();
 }

@@ -78,7 +78,9 @@ public class TwitterExperiments extends AppCompatActivity {
         call.enqueue(new Callback<List<Tweet>>() {
             @Override
             public void success(Result<List<Tweet>> result) {
-                ListAdapter listAdapter = new ListAdapter()
+                for (Tweet t: result.data) {
+                    Log.i("INFO : ", t.text);
+                }
                 Log.i("TWITTER", "SUCCESS");
             }
 

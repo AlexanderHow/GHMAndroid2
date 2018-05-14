@@ -1,15 +1,19 @@
 package com.td.fr.unice.polytech.ghmandroid.NF.Adapter;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 import com.td.fr.unice.polytech.ghmandroid.R;
+import com.td.fr.unice.polytech.ghmandroid.visuIncidentBasic;
 
 import java.util.List;
 
@@ -21,23 +25,37 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
     class IncidentViewHolder extends RecyclerView.ViewHolder {
         private final TextView title;
         private final TextView description;
+        private final RelativeLayout cellLayout;
 
         private IncidentViewHolder(View itemView) {
             super(itemView);
             title = (TextView)itemView.findViewById(R.id.titreIncidentCell);
             description = (TextView)itemView.findViewById(R.id.descriptionIncidentCell);
+            cellLayout = (RelativeLayout)itemView.findViewById(R.id.incidentCellLayout);
         }
 
-        public void setFields(String title, String desthcription){
+        public void setFields(final int id, String title, String desthcription){
             this.title.setText(title);
             this.description.setText(desthcription);
+            if(id != -1 ){
+                cellLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent visuIntent = new Intent(view.getContext(), visuIncidentBasic.class);
+                        Bundle b = new Bundle();
+                        b.putInt("IDINC", id);
+                        visuIntent.putExtras(b);
+                        view.getContext().startActivity(visuIntent);
+                    }
+                });
+            }
         }
     }
 
     private final LayoutInflater mInflater;
     private List<Incident> mIncident;
 
-    public IncidentListAdapter(Context context) { mInflater = LayoutInflater.from(context); }
+    public IncidentListAdapter(Context context) { mInflater = LayoutInflater.from(context); } //TODO from twitter bool
 
     @Override
     public IncidentViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -49,10 +67,10 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
     public void onBindViewHolder(IncidentViewHolder holder, int position) {
         if (mIncident != null) {
             Incident current = mIncident.get(position);
-            holder.setFields(current.getTitre(),current.getDescription());
+            holder.setFields(current.getId(), current.getTitre(),current.getDescription());
         } else {
             // Covers the case of data not being ready yet.
-            holder.setFields("nothing", "nothing");
+            holder.setFields(-1, "nothing", "nothing");
         }
     }
 

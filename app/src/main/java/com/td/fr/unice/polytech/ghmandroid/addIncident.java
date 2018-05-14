@@ -56,7 +56,7 @@ public class addIncident extends AppCompatActivity {
                     String descriStr = description.getText().toString();
                     String userRoleStr = userRole.getSelectedItem().toString();
                     String urgenceStr = urgence.getSelectedItem().toString();
-                    replyIntent.putExtra("TITLE", titleStr);
+                    replyIntent.putExtra("TITRE", titleStr);
                     replyIntent.putExtra("DESCRIPTION", descriStr);
                     replyIntent.putExtra("URGENCE", urgenceStr);
                     replyIntent.putExtra("USERROLE", userRoleStr);

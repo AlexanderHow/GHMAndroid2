@@ -7,4 +7,6 @@
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="flux_twitter">Flux twitter</string>
     <string name="tab_text_4">TAB4</string>
+    <string name="CONSUMER_KEY"> oVSxTsl9PNLUvdabbZd4mSdja</string>
+    <string name="CONSUMER_SECRET">KWk8Y9LG80rI6l1rDaMpOQ9QeF1Jce5EkY4bo4XDmlEEDCJYXv</string>
 </resources>

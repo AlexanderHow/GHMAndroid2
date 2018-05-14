@@ -4,9 +4,12 @@
     <string name="tab_text_2">Tab 2</string>
     <string name="tab_text_3">Tab 3</string>
     <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
     <string name="section_format">Hello World from section: %1$d</string>
     <string name="flux_twitter">Flux twitter</string>
     <string name="tab_text_4">TAB4</string>
+    <string name="CONSUMER_KEY"> oVSxTsl9PNLUvdabbZd4mSdja</string>
+    <string name="CONSUMER_SECRET">KWk8Y9LG80rI6l1rDaMpOQ9QeF1Jce5EkY4bo4XDmlEEDCJYXv</string>
     <string name="todo">TODO</string>
     <string name="title_activity_add_incident">addIncident</string>
     <string name="ajout_d_incident">Ajout d\'incident</string>

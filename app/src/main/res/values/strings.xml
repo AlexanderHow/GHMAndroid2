@@ -9,4 +9,23 @@
     <string name="tab_text_4">TAB4</string>
     <string name="CONSUMER_KEY"> oVSxTsl9PNLUvdabbZd4mSdja</string>
     <string name="CONSUMER_SECRET">KWk8Y9LG80rI6l1rDaMpOQ9QeF1Jce5EkY4bo4XDmlEEDCJYXv</string>
+    <string name="todo">TODO</string>
+    <string name="title_activity_add_incident">addIncident</string>
+    <string name="ajout_d_incident">Ajout d\'incident</string>
+    <string name="role_affect">Role affecté</string>
+    <string name="titre">Titre</string>
+    <string name="urgence">Urgence</string>
+    <string name="description">Description</string>
+    <string name="empty_not_saved">Ajout non sauvegardé</string>
+
+    <string-array name="user_role_array">
+        <item>1-Service Technique</item>
+        <item>2-Autre</item>
+    </string-array>
+
+    <string-array name="urgence_array">
+        <item>1-Peu important</item>
+        <item>2-Moyen</item>
+        <item>3-Urgent</item>
+    </string-array>
 </resources>

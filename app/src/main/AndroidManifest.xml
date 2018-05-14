@@ -19,6 +19,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".addIncident"
+            android:label="@string/title_activity_add_incident"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
         <activity android:name=".TwitterExperiments"></activity>
     </application>
 

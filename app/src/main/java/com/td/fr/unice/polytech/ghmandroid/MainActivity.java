@@ -2,6 +2,7 @@ package com.td.fr.unice.polytech.ghmandroid;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -17,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,10 +29,26 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
+import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.TweetAdapter;
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterApiClient;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.TwitterConfig;
+import com.twitter.sdk.android.core.TwitterCore;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.StatusesService;
 
 import java.util.List;
+
+import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -49,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private IncidentViewModel incidentViewModel;
+    private TwitterLoader twitterLoader;
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
 
@@ -68,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         mViewPager.setAdapter(mSectionsPagerAdapter);
+
+        twitterLoader = new TwitterLoader(this);
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
@@ -93,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
             Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
             incidentViewModel.insert(incident);
+            twitterLoader.postTweet(incident.getTitre());
             System.out.println("I WAS HERE");
             mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
         } else {
@@ -102,6 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.LENGTH_LONG).show();
         }
     }
+
 
 
     @Override
@@ -194,6 +217,44 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             // Show 3 total pages.
             return 3;
+        }
+    }
+
+    public static class TwitterLoader {
+
+        List<Tweet> tweets;
+        Context context;
+
+        public TwitterLoader(Context context) {
+            this.context = context;
+            TwitterConfig config = new TwitterConfig.Builder(context)
+                    .logger(new DefaultLogger(Log.DEBUG))
+                    .twitterAuthConfig(new TwitterAuthConfig(context.getString(R.string.CONSUMER_KEY), context.getString(R.string.CONSUMER_SECRET)))
+                    .debug(true)
+                    .build();
+            Twitter.initialize(config);
+            TwitterSession twitterSession = new TwitterSession(new TwitterAuthToken("940556535897448448-NIqM0XfTfa43Pt3n7uytXEtbAgUUw3B",
+                    "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, "barnabeliqueux");
+            TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
+        }
+
+        public void postTweet(String text) {
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            StatusesService statusesService = twitterApiClient.getStatusesService();
+            Call<Tweet> touite = statusesService.update(text, null, null,
+                    null, null, null, null, null, null);
+            touite.enqueue(new Callback<Tweet>() {
+                @Override
+                public void success(Result<Tweet> result) {
+                    Toast.makeText(context, "Posté !", Toast.LENGTH_SHORT).show();
+                    Log.i("TWITTER", "Successfully tweeted");
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    Log.i("TWITTER", "Failure");
+                }
+            });
         }
     }
 }

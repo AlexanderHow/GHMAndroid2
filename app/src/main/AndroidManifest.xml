@@ -22,7 +22,9 @@
         <activity
             android:name=".addIncident"
             android:label="@string/title_activity_add_incident"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".visuIncidentBasic" />
+        <activity android:name=".visuIncidentTwitter"></activity>
     </application>
 
 </manifest>

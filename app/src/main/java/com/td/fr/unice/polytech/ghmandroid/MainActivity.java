@@ -93,8 +93,7 @@ public class MainActivity extends AppCompatActivity {
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
             Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
             incidentViewModel.insert(incident);
-            System.out.println("I WAS HERE");
-            mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
+            System.out.println("I WAS HERE "+incident.getDescription());
         } else {
             Toast.makeText(
                     getApplicationContext(),

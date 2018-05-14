@@ -15,6 +15,8 @@
     <string name="urgence">Urgence</string>
     <string name="description">Description</string>
     <string name="empty_not_saved">Ajout non sauvegardé</string>
+    <string name="image_visu">image visu</string>
+    <string name="userrole">userRole</string>
 
     <string-array name="user_role_array">
         <item>1-Service Technique</item>

@@ -4,11 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/incidentCellLayout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:minHeight="120dp">
 
     <android.support.v7.widget.CardView
+        android:id="@+id/cardLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_margin="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -17,10 +20,12 @@
 
             <ImageView
                 android:id="@+id/photoIncidentCell"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:contentDescription="@string/todo"
+                android:minHeight="@dimen/activity_horizontal_margin"
+                android:minWidth="@dimen/activity_horizontal_margin"
                 android:paddingRight="10dp"
                 app:srcCompat="@mipmap/ic_launcher" />
 
@@ -28,7 +33,8 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:textAlignment="center">
 
                 <TextView
                     android:id="@+id/titreIncidentCell"
@@ -40,7 +46,7 @@
                 <TextView
                     android:id="@+id/descriptionIncidentCell"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:text="Description"
                     tools:layout_marginTop="5dp" />
 

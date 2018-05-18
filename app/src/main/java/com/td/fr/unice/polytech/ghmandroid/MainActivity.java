@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,11 +24,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
-import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.TweetAdapter;
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
 import com.twitter.sdk.android.core.Callback;

@@ -8,11 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ListAdapter;
-import android.widget.ListView;
 
-import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
-import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.TweetAdapter;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -92,8 +88,6 @@ public class TwitterExperiments extends AppCompatActivity {
                 for (Tweet t: result.data) {
                     Log.i("INFO : ", t.text);
                 }
-                TweetAdapter tweetAdapter = new TweetAdapter(result.data);
-                listView.setAdapter(tweetAdapter);
                 Log.i("TWITTER", "SUCCESS");
             }
 

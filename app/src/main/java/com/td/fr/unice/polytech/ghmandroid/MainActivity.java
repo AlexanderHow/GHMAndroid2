@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
+import com.td.fr.unice.polytech.ghmandroid.NF.Fragments.TwitterFragment;
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
 import com.twitter.sdk.android.core.Callback;
@@ -43,6 +44,7 @@ import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.StatusesService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import retrofit2.Call;
@@ -207,19 +209,20 @@ public class MainActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a PlaceholderFragment (defined as a static inner class below).
+            if (position == 3)
+                return TwitterFragment.newInstance(position + 1);
             return PlaceholderFragment.newInstance(position + 1);
         }
 
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 4;
         }
     }
 
     public static class TwitterLoader {
 
-        List<Tweet> tweets;
         Context context;
 
         public TwitterLoader(Context context) {
@@ -252,6 +255,27 @@ public class MainActivity extends AppCompatActivity {
                     Log.i("TWITTER", "Failure");
                 }
             });
+        }
+
+        public List<Tweet> getTweets() {
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            StatusesService statusesService = twitterApiClient.getStatusesService();
+            final List<Tweet> tweets = new ArrayList<>();
+            Call<List<Tweet>> call = statusesService.userTimeline(940556535897448448L, null, 50, null, null,
+                    null, true, null, false);
+            call.enqueue(new Callback<List<Tweet>>() {
+                @Override
+                public void success(Result<List<Tweet>> result) {
+                    tweets.addAll(result.data);
+                    Log.i("TWITTER", "Tweets received");
+                }
+
+                public void failure(TwitterException exception) {
+                    //Do something on failure
+                    Log.i("TWITTER", "FAILURE");
+                }
+            });
+            return tweets;
         }
     }
 }

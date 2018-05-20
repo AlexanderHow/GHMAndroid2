@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
             Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
             incidentViewModel.insert(incident);
-            twitterLoader.postTweet(incident.getTitre());
+            twitterLoader.postTweet(incident);
             System.out.println("I WAS HERE");
             mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
         } else {
@@ -238,15 +238,38 @@ public class MainActivity extends AppCompatActivity {
             TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
         }
 
-        public void postTweet(String text) {
+        public void postTweet(final Incident incident) {
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
             StatusesService statusesService = twitterApiClient.getStatusesService();
-            Call<Tweet> touite = statusesService.update(text, null, null,
+            Call<Tweet> touite = statusesService.update(incident.getTitre(), null, null,
                     null, null, null, null, null, null);
             touite.enqueue(new Callback<Tweet>() {
                 @Override
                 public void success(Result<Tweet> result) {
+                    Long id = result.data.getId();
+                    subTweet(id, incident.getUrgence() + "");
+                    subTweet(id, incident.getAvancement() + "");
+                    subTweet(id, incident.getUserDeposant() + "");
                     Toast.makeText(context, "Posté !", Toast.LENGTH_SHORT).show();
+                    Log.i("TWITTER", "Successfully tweeted");
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+                    Log.i("TWITTER", "Failure");
+                }
+            });
+        }
+
+        private void subTweet(Long id, String string) {
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            StatusesService statusesService = twitterApiClient.getStatusesService();
+            Call<Tweet> touite = statusesService.update(string, id, null,
+                    null, null, null, null, null, null);
+            touite.enqueue(new Callback<Tweet>() {
+                @Override
+                public void success(Result<Tweet> result) {
+                    Toast.makeText(context, "Detail Posté !", Toast.LENGTH_SHORT).show();
                     Log.i("TWITTER", "Successfully tweeted");
                 }
 

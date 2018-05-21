@@ -44,13 +44,25 @@ public abstract class IncidentRoomDatabase extends RoomDatabase {
 
             UserRole ur1 = new UserRole("Service Technique");
             mURDao.insert(ur1);
+            UserRole ur2 = new UserRole("Service Administratif");
+            mURDao.insert(ur2);
+            UserRole ur3 = new UserRole("Enseignant");
+            mURDao.insert(ur3);
 
-            User u1 = new User("Paul", "Martini");
+            User u1 = new User("Paul", "Martini",1);
             mUDao.insert(u1);
+            User u2 = new User("Bastien", "Martini",1);
+            mUDao.insert(u2);
+            User u3 = new User("Maxense", "Martini",2);
+            mUDao.insert(u3);
+            User u4 = new User("Pablo", "Martini",3);
+            mUDao.insert(u4);
 
             Incident i1 = new Incident("Ampoule cassée","une ampoule est cassée en e130",2,1,1,1);
             mIDao.insert(i1);
             Incident i2 = new Incident("Chaise cassée","une chaise est cassée en e133",1,2,1,1);
+            mIDao.insert(i2);
+            Incident i3 = new Incident("Dossier incomplet","Dossier de l'élève 1558 à remplir",1,1,2,3);
             mIDao.insert(i2);
             return null;
         }

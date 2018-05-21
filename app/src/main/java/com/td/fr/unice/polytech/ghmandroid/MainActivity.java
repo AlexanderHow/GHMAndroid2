@@ -4,6 +4,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -49,6 +52,9 @@ import java.util.List;
 
 import retrofit2.Call;
 
+import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.SEND_SMS;
+
 public class MainActivity extends AppCompatActivity {
 
     /**
@@ -60,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
+    private static final int REQUEST_READ_CONTACTS = 444;
+    private static final int REQUEST_SEND_SMS = 445;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -124,7 +132,64 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private boolean mayRequestContacts() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        if (checkSelfPermission(READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
+            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+        } else {
+            requestPermissions(new String[]{READ_CONTACTS}, REQUEST_READ_CONTACTS);
+        }
+        return false;
+    }
 
+    private boolean maySendSMS(){
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            return true;
+        }
+        if (checkSelfPermission(SEND_SMS) == PackageManager.PERMISSION_GRANTED) {
+            return true;
+        }
+        if (shouldShowRequestPermissionRationale(SEND_SMS)) {
+            requestPermissions(new String[]{SEND_SMS}, REQUEST_SEND_SMS);
+        } else {
+            requestPermissions(new String[]{SEND_SMS}, REQUEST_SEND_SMS);
+        }
+        return false;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_READ_CONTACTS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    if(this.maySendSMS()){
+                        //TODO use MessageSender
+                    }
+                } else {
+                    // permission denied
+                }
+                return;
+            }
+            case REQUEST_SEND_SMS: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    if(this.mayRequestContacts()){
+                        //TODO use MessageSender
+                    }
+                } else {
+                    // permission denied
+                }
+                return;
+            }
+        }
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

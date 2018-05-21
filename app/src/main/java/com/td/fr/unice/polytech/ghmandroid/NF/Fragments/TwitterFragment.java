@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.TwitterAdapter;
 import com.td.fr.unice.polytech.ghmandroid.R;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Twitter;
@@ -65,7 +66,9 @@ public class TwitterFragment extends Fragment {
                         .setViewStyle(R.style.tw__TweetLightWithActionsStyle)
                         .build();
 
-        recyclerView.setAdapter(adapter);
+        final TwitterAdapter twitterAdapter = new TwitterAdapter(getContext(), userTimeline);
+
+        recyclerView.setAdapter(twitterAdapter);
 
 
         return rootView;

@@ -26,6 +26,10 @@
         <activity android:name=".TwitterExperiments" />
         <activity android:name=".visuIncidentBasic" />
         <activity android:name=".visuIncidentTwitter" />
+        <activity
+            android:name=".Visualizers.VisuTweet"
+            android:label="@string/title_activity_visu_tweet"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>

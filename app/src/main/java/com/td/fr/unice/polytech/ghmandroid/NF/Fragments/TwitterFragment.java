@@ -60,12 +60,6 @@ public class TwitterFragment extends Fragment {
                 .maxItemsPerRequest(50)
                 .build();
 
-        final TweetTimelineRecyclerViewAdapter adapter =
-                new TweetTimelineRecyclerViewAdapter.Builder(this.getContext())
-                        .setTimeline(userTimeline)
-                        .setViewStyle(R.style.tw__TweetLightWithActionsStyle)
-                        .build();
-
         final TwitterAdapter twitterAdapter = new TwitterAdapter(getContext(), userTimeline);
 
         recyclerView.setAdapter(twitterAdapter);

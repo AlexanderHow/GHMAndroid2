@@ -9,13 +9,17 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.ImageLoader;
+import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.SubTweetAdapter;
 import com.td.fr.unice.polytech.ghmandroid.R;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
@@ -28,10 +32,14 @@ import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.SearchService;
 import com.twitter.sdk.android.core.services.StatusesService;
 import com.twitter.sdk.android.tweetui.TweetUtils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 import retrofit2.Call;
@@ -54,7 +62,8 @@ public class VisuTweet extends AppCompatActivity {
 
         setContentView(R.layout.activity_visu_tweet);
         final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final TextView textView = (TextView) findViewById(R.id.scrollText);
+        final TextView textView = (TextView) findViewById(R.id.title);
+        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.details);
 
         setSupportActionBar(toolbar);
         setTitle("Détails");
@@ -68,7 +77,7 @@ public class VisuTweet extends AppCompatActivity {
 
 
         try {
-            Long id = getIntent().getLongExtra("id", 998203499514073088L);
+            final Long id = getIntent().getLongExtra("id", 998203499514073088L);
 
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
             StatusesService statusesService = twitterApiClient.getStatusesService();
@@ -84,9 +93,36 @@ public class VisuTweet extends AppCompatActivity {
                     Toast.makeText(getBaseContext(), "Can't load tweet.", Toast.LENGTH_SHORT).show();
                 }
             });
+
+            SearchService searchService = twitterApiClient.getSearchService();
+            String query = "barnabeliqueux";
+            final List<Tweet> tweets = new ArrayList<>();
+            final SubTweetAdapter adapter = new SubTweetAdapter(getBaseContext());
+            recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
+            Call<Search> search = searchService.tweets(query, null, null, null, null,
+                    null, null, null, null, null);
+            search.enqueue(new Callback<Search>() {
+                @Override
+                public void success(Result<Search> result) {
+                    for (Tweet t: result.data.tweets) {
+                        if (t.inReplyToStatusId == id) {
+                            tweets.add(t);
+                            adapter.setTweets(tweets);
+                            recyclerView.setAdapter(adapter);
+                            Log.i("SEARCH", t.text);
+                        }
+                    }
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+
+                }
+            });
         } catch (Exception e) {
             Log.d("Err", "null intent");
         }
+
 
 
 

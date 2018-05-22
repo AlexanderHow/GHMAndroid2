@@ -1,16 +1,30 @@
 package com.td.fr.unice.polytech.ghmandroid;
 
+import android.content.ContentResolver;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.net.Uri;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
+
+import com.td.fr.unice.polytech.ghmandroid.NF.CameraPreview;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 
 public class addIncident extends AppCompatActivity {
 
@@ -18,6 +32,7 @@ public class addIncident extends AppCompatActivity {
     private Spinner userRole;
     private Spinner urgence;
     private EditText description;
+    private Bitmap image;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +58,19 @@ public class addIncident extends AppCompatActivity {
         adapterUrg.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerUrg.setAdapter(adapter);
 
+        FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
+        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+
+        cameraButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivityForResult(intent, 1);
+                }
+            }
+        });
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.addIncSend);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,6 +94,18 @@ public class addIncident extends AppCompatActivity {
             }
         });
 
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            ImageView imageView = (ImageView) findViewById(R.id.imageView);
+            Bundle extras = data.getExtras();
+            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            this.image = imageBitmap;
+            imageView.setImageBitmap(imageBitmap);
+        }
     }
 
 }

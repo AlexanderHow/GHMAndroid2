@@ -35,15 +35,6 @@
         <activity android:name=".TwitterExperiments" />
         <activity android:name=".visuIncidentBasic" />
         <activity android:name=".visuIncidentTwitter" />
-        <activity
-            android:name=".Visualizers.VisuTweet"
-            android:label="@string/title_activity_visu_tweet"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
         <activity android:name=".Visualizers.OptimizedVisuTweet"
             android:parentActivityName=".MainActivity">
             <meta-data

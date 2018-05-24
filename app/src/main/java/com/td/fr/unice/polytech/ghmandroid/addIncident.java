@@ -152,7 +152,7 @@ public class addIncident extends AppCompatActivity {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         Log.i("dateee", timeStamp);
         File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = new File(dir, timeStamp+".png");
+        File image = new File(dir, timeStamp + ".png");
         OutputStream os;
         try {
             os = new FileOutputStream(image);
@@ -166,4 +166,5 @@ public class addIncident extends AppCompatActivity {
         // Save a file: path for use with ACTION_VIEW intents
         currentPhotoPath = image.getAbsolutePath();
         return image;
+    }
 }

@@ -61,7 +61,7 @@ public class addIncident extends AppCompatActivity {
         spinnerUrg.setAdapter(adapter);
 
         FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override

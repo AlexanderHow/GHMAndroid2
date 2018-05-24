@@ -24,7 +24,6 @@ public class visuIncidentBasic extends AppCompatActivity {
     private TextView description;
     private ImageView imgVisu;
     private ImageView urgence;
-    private ImageButton back;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +37,6 @@ public class visuIncidentBasic extends AppCompatActivity {
         imgVisu = this.findViewById(R.id.visuIncImg);
         urgence = this.findViewById(R.id.visuIncUrgence);
 
-        back = this.findViewById(R.id.visuIncReturn);
 
         incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
         Bundle b = getIntent().getExtras();
@@ -53,12 +51,6 @@ public class visuIncidentBasic extends AppCompatActivity {
             });
         }
 
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
     }
 
     private void setFields(Incident incident){

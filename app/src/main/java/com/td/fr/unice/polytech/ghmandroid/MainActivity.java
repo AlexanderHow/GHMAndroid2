@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,6 +30,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
@@ -44,12 +48,19 @@ import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Media;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.MediaService;
 import com.twitter.sdk.android.core.services.StatusesService;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 import static android.Manifest.permission.READ_CONTACTS;
@@ -82,11 +93,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getString(R.string.menu_principal));
+
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -121,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
             Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
             incidentViewModel.insert(incident);
-            twitterLoader.postTweet(incident);
+            //twitterLoader.postTweet(incident);
             System.out.println("I WAS HERE");
             mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
         } else {
@@ -195,6 +207,20 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        final SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
+
         return true;
     }
 
@@ -256,6 +282,14 @@ public class MainActivity extends AppCompatActivity {
                     adapter.setIncidents(incidents);
                 }
             });
+
+            final SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
+            swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    swipeRefreshLayout.setRefreshing(false);
+                }
+            });
             return rootView;
         }
     }
@@ -312,9 +346,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void success(Result<Tweet> result) {
                     Long id = result.data.getId();
-                    subTweet(id, incident.getUrgence() + "");
-                    subTweet(id, incident.getAvancement() + "");
-                    subTweet(id, incident.getUserDeposant() + "");
+                    subTweet(id, "Urgence : " + incident.getUrgence());
                     Toast.makeText(context, "Posté !", Toast.LENGTH_SHORT).show();
                     Log.i("TWITTER", "Successfully tweeted");
                 }
@@ -326,23 +358,72 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
-        private void subTweet(Long id, String string) {
+        public void postTweetWithImage(final Incident incident, Bitmap bmp) {
             TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
-            StatusesService statusesService = twitterApiClient.getStatusesService();
-            Call<Tweet> touite = statusesService.update(string, id, null,
-                    null, null, null, null, null, null);
-            touite.enqueue(new Callback<Tweet>() {
+            MediaService mediaService = twitterApiClient.getMediaService();
+            File dir = context.getFilesDir();
+            File image = new File(dir, "temp.png");
+            OutputStream os;
+            try {
+                os = new FileOutputStream(image);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                Log.e("error", "error");
+            }
+
+            RequestBody request = RequestBody.create(MediaType.parse("image/*"), image);
+            Call<Media> upload = mediaService.upload(request, null, null);
+            upload.enqueue(new Callback<Media>() {
                 @Override
-                public void success(Result<Tweet> result) {
-                    Toast.makeText(context, "Detail Posté !", Toast.LENGTH_SHORT).show();
-                    Log.i("TWITTER", "Successfully tweeted");
+                public void success(Result<Media> result) {
+                    TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                    StatusesService statusesService = twitterApiClient.getStatusesService();
+                    Call<Tweet> touite = statusesService.update(incident.getTitre(), null, null,
+                            null, null, null, null, null, result.data.mediaIdString);
+                    touite.enqueue(new Callback<Tweet>() {
+                        @Override
+                        public void success(Result<Tweet> result) {
+                            Long id = result.data.getId();
+                            subTweet(id, "Urgence : " + incident.getUrgence());
+                            Toast.makeText(context, "Posté !", Toast.LENGTH_SHORT).show();
+                            Log.i("TWITTER", "Successfully tweeted");
+                        }
+
+                        @Override
+                        public void failure(TwitterException exception) {
+                            Log.i("TWITTER", "Failure with image");
+                        }
+                    });
                 }
 
                 @Override
                 public void failure(TwitterException exception) {
-                    Log.i("TWITTER", "Failure");
+
                 }
             });
+        }
+
+        private void subTweet(Long id, String string) {
+            if (!string.equals("")) {
+                TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                StatusesService statusesService = twitterApiClient.getStatusesService();
+                Call<Tweet> touite = statusesService.update(string, id, null,
+                        null, null, null, null, null, null);
+                touite.enqueue(new Callback<Tweet>() {
+                    @Override
+                    public void success(Result<Tweet> result) {
+                        Toast.makeText(context, "Detail Posté !", Toast.LENGTH_SHORT).show();
+                        Log.i("TWITTER", "Successfully tweeted");
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        Log.i("TWITTER", "Failure");
+                    }
+                });
+            }
         }
 
         public List<Tweet> getTweets() {

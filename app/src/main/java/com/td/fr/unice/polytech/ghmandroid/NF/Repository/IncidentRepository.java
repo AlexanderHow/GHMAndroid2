@@ -47,6 +47,10 @@ public class IncidentRepository {
         new insertAsyncTask(this.mIncidentDao).execute(incident);
     }
 
+    public void update(int idInc, int avancement){
+        new updateAsyncTask(this.mIncidentDao).execute(idInc, avancement);
+    }
+
 
 
 
@@ -90,6 +94,21 @@ public class IncidentRepository {
         @Override
         protected Void doInBackground(final Incident... params) {
             mAsyncTaskDao.insert(params[0]);
+            return null;
+        }
+    }
+
+    private static class updateAsyncTask extends AsyncTask<Integer, Void, Void> {
+
+        private IncidentDao mAsyncTaskDao;
+
+        updateAsyncTask(IncidentDao dao) {
+            mAsyncTaskDao = dao;
+        }
+
+        @Override
+        protected Void doInBackground(final Integer... params) {
+            mAsyncTaskDao.updateAvancement(params[0],params[1]);
             return null;
         }
     }

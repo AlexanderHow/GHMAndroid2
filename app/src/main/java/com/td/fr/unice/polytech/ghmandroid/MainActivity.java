@@ -34,9 +34,14 @@ import android.widget.SearchView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.IncidentListAdapter;
+import com.td.fr.unice.polytech.ghmandroid.NF.ContextAndRoleHolder;
 import com.td.fr.unice.polytech.ghmandroid.NF.Fragments.TwitterFragment;
+import com.td.fr.unice.polytech.ghmandroid.NF.Helpers.MessageSender;
+import com.td.fr.unice.polytech.ghmandroid.NF.HolderMatchingUser;
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
+import com.td.fr.unice.polytech.ghmandroid.NF.User;
 import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
+import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.UserViewModel;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Result;
@@ -85,15 +90,19 @@ public class MainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private IncidentViewModel incidentViewModel;
+    private UserViewModel userViewModel;
     private TwitterLoader twitterLoader;
+    private ContextAndRoleHolder holder;
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
+    public static final int USER_ROLE_ID = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -123,19 +132,49 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        userViewModel.getUsersByIdRole(USER_ROLE_ID).observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable final List<User> users) {
+                // Update the cached copy of the incidents in the adapter.
+                HolderMatchingUser.getInstance().setUsersOfRole(users);
+            }
+        });
+
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            int urole = Integer.valueOf(data.getStringExtra("USERROLE").split("-")[0]);
-            int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
-            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
+            String userRolestr = data.getStringExtra("USERROLE");
+            String titleStr = data.getStringExtra("TITRE");
+            String urgenceStr = data.getStringExtra("URGENCE");
+            String descriStr = data.getStringExtra("DESCRIPTION");
+
+            int urole = Integer.valueOf(userRolestr.split("-")[0]);
+            int urgence = Integer.valueOf(urgenceStr.split("-")[0]);
+            Incident incident = new Incident(titleStr,descriStr,urgence,1,urole,1);
             incidentViewModel.insert(incident);
             //twitterLoader.postTweet(incident);
+
+            StringBuilder txtMessage = new StringBuilder();
+            txtMessage.append("L'incident :");
+            txtMessage.append(titleStr);
+            txtMessage.append("\n et est affecté aux utilisateurs du rôle ");
+            txtMessage.append(userRolestr);
+            txtMessage.append("\n ceci est ");
+            txtMessage.append(urgenceStr);
+            txtMessage.append(" merci de bien vouloir consulter l'application pour plus d'information");
+
+            this.holder = new ContextAndRoleHolder(getApplicationContext(),1,getApplication(),txtMessage.toString());
+
+            if(this.mayRequestContacts()){
+                if(this.maySendSMS()){
+                    new MessageSender().execute(this.holder);
+                }
+            }
             System.out.println("I WAS HERE");
-            mSectionsPagerAdapter.notifyDataSetChanged(); //TODO not sure but need to refresh or notify
+            mSectionsPagerAdapter.notifyDataSetChanged();
         } else {
             Toast.makeText(
                     getApplicationContext(),
@@ -182,20 +221,25 @@ public class MainActivity extends AppCompatActivity {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // permission was granted
                     if(this.maySendSMS()){
-                        //TODO use MessageSender
+                        new MessageSender().execute(this.holder);
                     }
                 } else {
-                    // permission denied
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Message non envoyé",
+                            Toast.LENGTH_LONG).show();
                 }
                 return;
             }
             case REQUEST_SEND_SMS: {
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    if(this.mayRequestContacts()){
-                        //TODO use MessageSender
-                    }
+                    new MessageSender().execute(this.holder);
+
                 } else {
-                    // permission denied
+                    Toast.makeText(
+                            getApplicationContext(),
+                            "Message non envoyé",
+                            Toast.LENGTH_LONG).show();
                 }
                 return;
             }
@@ -271,11 +315,11 @@ public class MainActivity extends AppCompatActivity {
             View rootView = inflater.inflate(R.layout.fragment_main, container, false);
             incidentViewModel = ViewModelProviders.of(this).get(IncidentViewModel.class);
             RecyclerView recyclerView = rootView.findViewById(R.id.recyclerview);
-            final IncidentListAdapter adapter = new IncidentListAdapter(rootView.getContext());
+            final IncidentListAdapter adapter = new IncidentListAdapter(rootView.getContext(), this);
             recyclerView.setAdapter(adapter);
             recyclerView.setLayoutManager(new LinearLayoutManager(rootView.getContext()));
 
-            incidentViewModel.getIncidentByAvancementAndAffecte(getArguments().getInt(ARG_SECTION_NUMBER),1).observe(this, new Observer<List<Incident>>() {
+            incidentViewModel.getIncidentByAvancementAndAffecte(getArguments().getInt(ARG_SECTION_NUMBER),USER_ROLE_ID).observe(this, new Observer<List<Incident>>() {
                 @Override
                 public void onChanged(@Nullable final List<Incident> incidents) {
                     // Update the cached copy of the incidents in the adapter.
@@ -291,6 +335,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             });
             return rootView;
+        }
+
+        public void updateIncident(int idInc, int avancement){
+            incidentViewModel.update(idInc,avancement); //notify ?
         }
     }
 
@@ -315,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
+            // Show 4 total pages.
             return 4;
         }
     }

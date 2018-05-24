@@ -24,7 +24,8 @@
 
     <string-array name="user_role_array">
         <item>1-Service Technique</item>
-        <item>2-Autre</item>
+        <item>2-Service Administratif</item>
+        <item>3-Enseignant</item>
     </string-array>
 
     <string-array name="urgence_array">

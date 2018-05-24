@@ -12,14 +12,14 @@ import android.os.Build;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.telephony.SmsManager;
+import android.util.Log;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Contact;
 import com.td.fr.unice.polytech.ghmandroid.NF.ContextAndRoleHolder;
+import com.td.fr.unice.polytech.ghmandroid.NF.HolderMatchingUser;
 import com.td.fr.unice.polytech.ghmandroid.NF.Repository.UserRepository;
-import com.td.fr.unice.polytech.ghmandroid.NF.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class MessageSender extends AsyncTask<ContextAndRoleHolder, Void, ArrayList<Contact>> {
     private String textMessage;
@@ -27,37 +27,25 @@ public class MessageSender extends AsyncTask<ContextAndRoleHolder, Void, ArrayLi
     @Override
     protected ArrayList<Contact> doInBackground(ContextAndRoleHolder... params) {
         this.textMessage=params[0].getTextMessage();
-        UserRepository userRepository = new UserRepository(params[0].getApp());
-        List<User> userlist = userRepository.getUsersByRole(params[0].getIdRoleFromHolder()).getValue(); //a way to wait the end of the request ?
-        ArrayList<String> matchingNames = new ArrayList<>();
-
-        //temporary
-        try {
-            wait(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        if (userlist != null) {
-            for(User u : userlist){
-                matchingNames.add(u.getNom()); //maybe get the fullname according to the name of the contact
-            }
-        }
-
+        ArrayList<String> matchingNames = HolderMatchingUser.getInstance().getMatchingNames();
         return this.getPhoneContacts(params[0].getContextFromHolder(), matchingNames);
     }
 
     @Override
     protected void onPostExecute(ArrayList<Contact> res) {
+        Log.d("MESSENDER", "onPost Name: Hello there");
         SmsManager smsManager = SmsManager.getDefault();
         for( Contact c : res){
             //smsManager.sendMultimediaMessage(); with image
-            smsManager.sendTextMessage(c.getPhoneNo(),null,this.textMessage,null,null);
+            String toSend = this.textMessage + "\n To " + c.getName();
+            Log.d("MESSENDER", "onPost Finally: Hello "+toSend +"____" + c.getPhoneNo());
+            ArrayList<String> parts = smsManager.divideMessage(toSend);
+            smsManager.sendMultipartTextMessage(c.getPhoneNo(),null,parts,null,null);
         }
     }
 
     private ArrayList<Contact> getPhoneContacts(Context context, ArrayList<String> namesOfRole) {
-
+        Log.d("MESSENDER", "getPhoneContact: Hello there");
         ArrayList<Contact> contactList = new ArrayList<Contact>();
 
         String phoneNumber = null;
@@ -81,7 +69,7 @@ public class MessageSender extends AsyncTask<ContextAndRoleHolder, Void, ArrayLi
             while (cursor.moveToNext()) {
                 String contact_id = cursor.getString(cursor.getColumnIndex(_ID));
                 name = cursor.getString(cursor.getColumnIndex(DISPLAY_NAME));
-
+                Log.d("MESSENDER", "getPhoneContact Name: Hello "+name);
                 int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(HAS_PHONE_NUMBER)));
 
                 if (hasPhoneNumber > 0) {
@@ -90,6 +78,7 @@ public class MessageSender extends AsyncTask<ContextAndRoleHolder, Void, ArrayLi
                     if (phoneCursor != null) {
                         phoneCursor.moveToNext();
                         phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(NUMBER));
+                        Log.d("MESSENDER", "getPhoneContact Name: Hello "+phoneNumber);
                         phoneCursor.close();
                     }
                 }

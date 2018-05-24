@@ -31,4 +31,5 @@ public class IncidentViewModel extends AndroidViewModel {
     }
 
     public void insert(Incident incident) { mRepository.insert(incident); }
+    public void update(int idInc, int avancement) { mRepository.update(idInc, avancement); }
 }

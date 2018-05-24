@@ -79,4 +79,20 @@ public class Incident {
     public void setId(int id) {
         this.id = id;
     }
+
+    public boolean upgradeAvancment(){
+        if(this.mAvancement<3){
+            this.mAvancement++;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean downgradeAvancment(){
+        if(this.mAvancement>1){
+            this.mAvancement--;
+            return true;
+        }
+        return false;
+    }
 }

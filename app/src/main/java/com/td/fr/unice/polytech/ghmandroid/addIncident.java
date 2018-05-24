@@ -58,7 +58,7 @@ public class addIncident extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapterUrg = ArrayAdapter.createFromResource(this,
                 R.array.urgence_array, android.R.layout.simple_spinner_item);
         adapterUrg.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerUrg.setAdapter(adapter);
+        spinnerUrg.setAdapter(adapterUrg);
 
         FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
         ImageView imageView = (ImageView) findViewById(R.id.imageView);

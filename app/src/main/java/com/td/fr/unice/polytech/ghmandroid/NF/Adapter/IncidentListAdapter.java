@@ -24,6 +24,7 @@ import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
 import com.td.fr.unice.polytech.ghmandroid.R;
 import com.td.fr.unice.polytech.ghmandroid.visuIncidentBasic;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -64,13 +65,14 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
             this.description.setText(desthcription);
             try {
                 if(incident.getPhotoPath()!=null){
-                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(placeholderFragment.getContext().getContentResolver(),Uri.parse(incident.getPhotoPath()));
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(placeholderFragment.getContext().getContentResolver(),Uri.fromFile(new File(incident.getPhotoPath())));
                     this.photoInc.setImageBitmap(bitmap);
                 }else{
                     this.photoInc.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.noimg));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                this.photoInc.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.noimg));
                 Log.d("INCIDENTLISTADAPTER", "setFields: loadImage failed");
             }
 

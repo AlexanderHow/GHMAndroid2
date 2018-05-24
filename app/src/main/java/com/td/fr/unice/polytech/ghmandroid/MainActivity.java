@@ -152,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             String descriStr = data.getStringExtra("DESCRIPTION");
             int urole = Integer.valueOf(data.getStringExtra("USERROLE").split("-")[0]);
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
-            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1, data.getStringExtra("IMAGE"));
+            Incident incident = new Incident(titleStr,descriStr,urgence,1,urole,1, data.getStringExtra("IMAGE"));
             incidentViewModel.insert(incident);
             //twitterLoader.postTweet(incident);
 
@@ -161,15 +161,22 @@ public class MainActivity extends AppCompatActivity {
             txtMessage.append(titleStr);
             txtMessage.append("\n et est affecté aux utilisateurs du rôle ");
             txtMessage.append(userRolestr);
-            txtMessage.append("\n ceci est ");
+            txtMessage.append("\n le degré d'importance est ");
             txtMessage.append(urgenceStr);
             txtMessage.append(" merci de bien vouloir consulter l'application pour plus d'information");
 
-            this.holder = new ContextAndRoleHolder(getApplicationContext(),1,getApplication(),txtMessage.toString());
+            this.holder = new ContextAndRoleHolder(getApplicationContext(),urole,getApplication(),txtMessage.toString());
 
             if(this.mayRequestContacts()){
                 if(this.maySendSMS()){
-                    new MessageSender().execute(this.holder);
+                    userViewModel.getUsersByIdRole(urole).observe(this, new Observer<List<User>>() {
+                        @Override
+                        public void onChanged(@Nullable final List<User> users) {
+                            // Update the cached copy of the incidents in the adapter.
+                            HolderMatchingUser.getInstance().setUsersOfRole(users);
+                            new MessageSender().execute(holder);
+                        }
+                    });
                 }
             }
             System.out.println("I WAS HERE");
@@ -320,7 +327,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         public void updateIncident(int idInc, int avancement){
-            incidentViewModel.update(idInc,avancement); //notify ?
+            incidentViewModel.update(idInc,avancement);
         }
     }
 

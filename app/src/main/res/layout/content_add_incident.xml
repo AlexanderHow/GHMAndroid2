@@ -117,7 +117,7 @@
             android:layout_weight="1"
             android:clickable="true"
             app:elevation="0dp"
-            app:srcCompat="@android:drawable/ic_input_add" />
+            app:srcCompat="@drawable/ic_photo_camera" />
 
         <ImageView
             android:id="@+id/imageView"

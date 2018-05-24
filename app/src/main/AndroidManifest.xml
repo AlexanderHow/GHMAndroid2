@@ -26,14 +26,24 @@
         <activity
             android:name=".addIncident"
             android:label="@string/title_activity_add_incident"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.td.fr.unice.polytech.ghmandroid.MainActivity"/>
+        </activity>
         <activity android:name=".TwitterExperiments" />
         <activity android:name=".visuIncidentBasic" />
         <activity android:name=".visuIncidentTwitter" />
         <activity
             android:name=".Visualizers.VisuTweet"
             android:label="@string/title_activity_visu_tweet"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
     </application>
 
 </manifest>

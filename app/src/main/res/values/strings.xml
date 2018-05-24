@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">GHMAndroid</string>
+    <string name="menu_principal">Menu Principal</string>
     <string name="tab_text_1">À faire</string>
     <string name="tab_text_2">En cours</string>
     <string name="tab_text_3">Terminés</string>
@@ -11,7 +12,7 @@
     <string name="CONSUMER_KEY"> oVSxTsl9PNLUvdabbZd4mSdja</string>
     <string name="CONSUMER_SECRET">KWk8Y9LG80rI6l1rDaMpOQ9QeF1Jce5EkY4bo4XDmlEEDCJYXv</string>
     <string name="todo">TODO</string>
-    <string name="title_activity_add_incident">addIncident</string>
+    <string name="title_activity_add_incident">Ajout d\'incident</string>
     <string name="ajout_d_incident">Ajout d\'incident</string>
     <string name="role_affect">Role affecté</string>
     <string name="titre">Titre</string>

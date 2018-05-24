@@ -40,6 +40,7 @@ public class addIncident extends AppCompatActivity {
         setContentView(R.layout.activity_add_incident);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle(getString(R.string.title_activity_add_incident));
         Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
 
         this.title = findViewById(R.id.addIncInputTitle);
@@ -90,9 +91,11 @@ public class addIncident extends AppCompatActivity {
                     replyIntent.putExtra("URGENCE", urgenceStr);
                     replyIntent.putExtra("USERROLE", userRoleStr);
                     setResult(RESULT_OK, replyIntent);
+                    MainActivity.TwitterLoader twitterLoader = new MainActivity.TwitterLoader(getApplicationContext());
                     if (image != null) {
-                        MainActivity.TwitterLoader twitterLoader = new MainActivity.TwitterLoader(getApplicationContext());
-                        twitterLoader.postTweetWithImage(new Incident(titleStr, descriStr, 1, 1, 1, 1), image);
+                        twitterLoader.postTweetWithImage(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1), image);
+                    } else {
+                        twitterLoader.postTweet(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1));
                     }
                 }
                 finish();

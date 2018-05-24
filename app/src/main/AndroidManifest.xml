@@ -33,7 +33,12 @@
                 android:value="com.td.fr.unice.polytech.ghmandroid.MainActivity" />
         </activity>
         <activity android:name=".TwitterExperiments" />
-        <activity android:name=".visuIncidentBasic" />
+        <activity android:name=".visuIncidentBasic"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
         <activity android:name=".visuIncidentTwitter" />
         <activity android:name=".Visualizers.OptimizedVisuTweet"
             android:parentActivityName=".MainActivity">

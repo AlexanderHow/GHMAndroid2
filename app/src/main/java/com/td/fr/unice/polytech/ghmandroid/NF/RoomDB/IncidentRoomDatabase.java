@@ -65,7 +65,7 @@ public abstract class IncidentRoomDatabase extends RoomDatabase {
             mIDao.insert(i1);
             Incident i2 = new Incident("Chaise cassée","une chaise est cassée en e133",1,2,1,1, null);
             mIDao.insert(i2);
-            Incident i3 = new Incident("Dossier incomplet","Dossier de l'élève 1558 à remplir",1,1,2,3);
+            Incident i3 = new Incident("Dossier incomplet","Dossier de l'élève 1558 à remplir",1,1,2,3, null);
             mIDao.insert(i2);
             return null;
         }

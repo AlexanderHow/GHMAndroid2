@@ -3,7 +3,10 @@ package com.td.fr.unice.polytech.ghmandroid.NF.Adapter;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -20,6 +24,7 @@ import com.td.fr.unice.polytech.ghmandroid.NF.ViewModel.IncidentViewModel;
 import com.td.fr.unice.polytech.ghmandroid.R;
 import com.td.fr.unice.polytech.ghmandroid.visuIncidentBasic;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -33,6 +38,8 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
         private final RelativeLayout cellLayout;
         private final ImageButton upgrade;
         private final ImageButton downgrade;
+        private final ImageView photoInc;
+        private final ImageView urgenceImg;
         private final MainActivity.PlaceholderFragment placeholderFragment;
 
 
@@ -44,6 +51,8 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
             cellLayout = (RelativeLayout)itemView.findViewById(R.id.incidentCellLayout);
             upgrade = (ImageButton)itemView.findViewById(R.id.upgradeIncidentCell);
             downgrade = (ImageButton)itemView.findViewById(R.id.downgradeIncidentCell);
+            photoInc = (ImageView)itemView.findViewById(R.id.photoIncidentCell);
+            urgenceImg = (ImageView)itemView.findViewById(R.id.imageUrgenceIncidentCell);
             this.placeholderFragment=placeholderFragment;
         }
 
@@ -53,6 +62,33 @@ public class IncidentListAdapter extends RecyclerView.Adapter<IncidentListAdapte
             final int id = incident.getId();
             this.title.setText(title);
             this.description.setText(desthcription);
+            try {
+                if(incident.getPhotoPath()!=null){
+                    Bitmap bitmap = MediaStore.Images.Media.getBitmap(placeholderFragment.getContext().getContentResolver(),Uri.parse(incident.getPhotoPath()));
+                    this.photoInc.setImageBitmap(bitmap);
+                }else{
+                    this.photoInc.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.noimg));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                Log.d("INCIDENTLISTADAPTER", "setFields: loadImage failed");
+            }
+
+            switch (incident.getUrgence()){
+                case 1 :
+                    this.urgenceImg.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.levels_1));
+                    break;
+                case 2 :
+                    this.urgenceImg.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.levels_2));
+                    break;
+                case 3 :
+                    this.urgenceImg.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.levels_3));
+                    break;
+                default:
+                    this.urgenceImg.setImageDrawable(placeholderFragment.getContext().getDrawable(R.drawable.noimg));
+                    break;
+            }
+
             if(id != -1 ){
                 cellLayout.setOnClickListener(new View.OnClickListener() {
                     @Override

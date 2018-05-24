@@ -28,6 +28,9 @@ public class Incident {
     @ColumnInfo(name = "avancement")
     private int mAvancement;
 
+    @ColumnInfo(name = "photoPath")
+    private String mPhotoPath;
+
     /*@ColumnInfo(name = "date")
     private Date mDate;*/
 
@@ -38,9 +41,6 @@ public class Incident {
     @ForeignKey(entity = User.class, parentColumns = "id", childColumns = "idUserRoleAffect")
     @ColumnInfo(name = "idUserDeposant")
     private int mUserDeposant;
-
-    @ColumnInfo(name = "photo")
-    private String mPhotoPath;
 
     public Incident(String mTitre, String mDescription, int mUrgence, int mAvancement, int mUserRoleAffect, int mUserDeposant, String mPhotoPath) {
         this.mTitre = mTitre;
@@ -80,6 +80,10 @@ public class Incident {
         return mAvancement;
     }
 
+    public String getPhotoPath() {
+        return mPhotoPath;
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -98,9 +102,5 @@ public class Incident {
             return true;
         }
         return false;
-    }
-
-    public String getmPhotoPath() {
-        return mPhotoPath;
     }
 }

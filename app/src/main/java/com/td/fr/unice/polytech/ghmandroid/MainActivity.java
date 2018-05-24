@@ -268,7 +268,7 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             Twitter.initialize(config);
             TwitterSession twitterSession = new TwitterSession(new TwitterAuthToken("940556535897448448-NIqM0XfTfa43Pt3n7uytXEtbAgUUw3B",
-                    "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, "barnabeliqueux");
+                    "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, context.getString(R.string.username));
             TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
         }
 

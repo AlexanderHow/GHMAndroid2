@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
             int urole = Integer.valueOf(data.getStringExtra("USERROLE").split("-")[0]);
             int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
-            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1);
+            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1, data.getStringExtra("IMAGE"));
             incidentViewModel.insert(incident);
             //twitterLoader.postTweet(incident);
             System.out.println("I WAS HERE");

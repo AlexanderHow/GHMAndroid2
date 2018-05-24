@@ -1,11 +1,13 @@
 package com.td.fr.unice.polytech.ghmandroid.Visualizers;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.td.fr.unice.polytech.ghmandroid.R;
@@ -60,6 +62,11 @@ public class OptimizedVisuTweet extends AppCompatActivity {
                 @Override
                 public void success(Result<Tweet> result) {
                     linearLayout.addView(new UnclickableTweetView(getApplicationContext(), result.data));
+                    TextView textView = new TextView(getBaseContext());
+                    textView.setText("Retweets : " + result.data.retweetCount + "       Favoris : " + result.data.favoriteCount);
+                    textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                    textView.setTextColor(Color.BLACK);
+                    linearLayout.addView(textView);
                     View v = new View(getBaseContext());
                     v.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
                     v.setMinimumHeight(5);
@@ -73,7 +80,7 @@ public class OptimizedVisuTweet extends AppCompatActivity {
             });
 
             SearchService searchService = twitterApiClient.getSearchService();
-            String query = "barnabeliqueux";
+            String query = getString(R.string.username);
             Call<Search> search = searchService.tweets(query, null, null, null, null,
                     null, null, null, null, null);
             search.enqueue(new Callback<Search>() {

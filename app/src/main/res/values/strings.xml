@@ -21,6 +21,7 @@
     <string name="empty_not_saved">Ajout non sauvegardé</string>
     <string name="image_visu">image visu</string>
     <string name="userrole">userRole</string>
+    <string name="username">incidentsPNS</string>
 
     <string-array name="user_role_array">
         <item>1-Service Technique</item>

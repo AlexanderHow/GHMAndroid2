@@ -39,13 +39,17 @@ public class Incident {
     @ColumnInfo(name = "idUserDeposant")
     private int mUserDeposant;
 
-    public Incident(String mTitre, String mDescription, int mUrgence, int mAvancement, int mUserRoleAffect, int mUserDeposant) {
+    @ColumnInfo(name = "photo")
+    private String mPhotoPath;
+
+    public Incident(String mTitre, String mDescription, int mUrgence, int mAvancement, int mUserRoleAffect, int mUserDeposant, String mPhotoPath) {
         this.mTitre = mTitre;
         this.mDescription = mDescription;
         this.mUrgence = mUrgence;
         this.mAvancement = mAvancement;
         this.mUserRoleAffect = mUserRoleAffect;
         this.mUserDeposant = mUserDeposant;
+        this.mPhotoPath = mPhotoPath;
     }
 
     public int getId() {
@@ -94,5 +98,9 @@ public class Incident {
             return true;
         }
         return false;
+    }
+
+    public String getmPhotoPath() {
+        return mPhotoPath;
     }
 }

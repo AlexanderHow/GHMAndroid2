@@ -11,7 +11,6 @@ import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -108,6 +107,7 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(getString(R.string.menu_principal));
 
+        Log.i("WAIIIIIT" , getFilesDir().getAbsolutePath());
         // Create the adapter that will return a fragment for each of the three
         // primary sections of the activity.
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -150,10 +150,9 @@ public class MainActivity extends AppCompatActivity {
             String titleStr = data.getStringExtra("TITRE");
             String urgenceStr = data.getStringExtra("URGENCE");
             String descriStr = data.getStringExtra("DESCRIPTION");
-
-            int urole = Integer.valueOf(userRolestr.split("-")[0]);
-            int urgence = Integer.valueOf(urgenceStr.split("-")[0]);
-            Incident incident = new Incident(titleStr,descriStr,urgence,1,urole,1);
+            int urole = Integer.valueOf(data.getStringExtra("USERROLE").split("-")[0]);
+            int urgence = Integer.valueOf(data.getStringExtra("URGENCE").split("-")[0]);
+            Incident incident = new Incident(data.getStringExtra("TITRE"),data.getStringExtra("DESCRIPTION"),urgence,1,urole,1, data.getStringExtra("IMAGE"));
             incidentViewModel.insert(incident);
             //twitterLoader.postTweet(incident);
 
@@ -251,20 +250,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
-        final SearchView searchView = (SearchView) menu.findItem(R.id.app_bar_search).getActionView();
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                return false;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
-
         return true;
     }
 
@@ -276,9 +261,6 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -381,7 +363,7 @@ public class MainActivity extends AppCompatActivity {
                     .build();
             Twitter.initialize(config);
             TwitterSession twitterSession = new TwitterSession(new TwitterAuthToken("940556535897448448-NIqM0XfTfa43Pt3n7uytXEtbAgUUw3B",
-                    "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, "barnabeliqueux");
+                    "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, context.getString(R.string.username));
             TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
         }
 

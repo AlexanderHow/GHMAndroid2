@@ -1,18 +1,22 @@
 package com.td.fr.unice.polytech.ghmandroid;
 
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,8 +27,17 @@ import android.widget.Spinner;
 
 import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
 
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.Objects;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class addIncident extends AppCompatActivity {
 
@@ -32,7 +45,8 @@ public class addIncident extends AppCompatActivity {
     private Spinner userRole;
     private Spinner urgence;
     private EditText description;
-    private Bitmap image;
+    private Bitmap imageBitmap;
+    private String currentPhotoPath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +75,7 @@ public class addIncident extends AppCompatActivity {
         spinnerUrg.setAdapter(adapterUrg);
 
         FloatingActionButton cameraButton = (FloatingActionButton) findViewById(R.id.cameraButton);
-        ImageView imageView = (ImageView) findViewById(R.id.imageView);
+        final ImageView imageView = (ImageView) findViewById(R.id.imageView);
 
         cameraButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,12 +104,13 @@ public class addIncident extends AppCompatActivity {
                     replyIntent.putExtra("DESCRIPTION", descriStr);
                     replyIntent.putExtra("URGENCE", urgenceStr);
                     replyIntent.putExtra("USERROLE", userRoleStr);
+                    replyIntent.putExtra("IMAGE", currentPhotoPath);
                     setResult(RESULT_OK, replyIntent);
                     MainActivity.TwitterLoader twitterLoader = new MainActivity.TwitterLoader(getApplicationContext());
-                    if (image != null) {
-                        twitterLoader.postTweetWithImage(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1), image);
+                    if (imageBitmap != null) {
+                        twitterLoader.postTweetWithImage(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1, currentPhotoPath), imageBitmap);
                     } else {
-                        twitterLoader.postTweet(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1));
+                        twitterLoader.postTweet(new Incident(titleStr, descriStr, urgence.getSelectedItemPosition(), 1, userRole.getSelectedItemPosition(), 1, currentPhotoPath));
                     }
                 }
                 finish();
@@ -122,10 +137,34 @@ public class addIncident extends AppCompatActivity {
         if (requestCode == 1 && resultCode == RESULT_OK) {
             ImageView imageView = (ImageView) findViewById(R.id.imageView);
             Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            this.image = imageBitmap;
+            this.imageBitmap = (Bitmap) extras.get("data");
             imageView.setImageBitmap(imageBitmap);
+            try {
+                File imageFile = createImageFile(imageBitmap);
+                currentPhotoPath = imageFile.getPath();
+            }
+            catch (Exception e) {
+
+            }
         }
     }
+    private File createImageFile(Bitmap bitmap) throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        Log.i("dateee", timeStamp);
+        File dir = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = new File(dir, timeStamp + ".png");
+        OutputStream os;
+        try {
+            os = new FileOutputStream(image);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, os);
+            os.flush();
+            os.close();
+        } catch (Exception e) {
+            Log.e("error", "error");
+        }
 
+        // Save a file: path for use with ACTION_VIEW intents
+        currentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
 }

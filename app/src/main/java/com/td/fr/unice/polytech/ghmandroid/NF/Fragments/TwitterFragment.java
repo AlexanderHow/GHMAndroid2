@@ -47,7 +47,7 @@ public class TwitterFragment extends Fragment {
                 .build();
         Twitter.initialize(config);
         TwitterSession twitterSession = new TwitterSession(new TwitterAuthToken("940556535897448448-NIqM0XfTfa43Pt3n7uytXEtbAgUUw3B",
-                "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, "barnabeliqueux");
+                "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, getContext().getString(R.string.username));
         TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
 
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
@@ -72,7 +72,7 @@ public class TwitterFragment extends Fragment {
 
     public void initialize() {
         final UserTimeline userTimeline = new UserTimeline.Builder()
-                .screenName("barnabeliqueux")
+                .screenName(getContext().getString(R.string.username))
                 .includeReplies(false)
                 .includeRetweets(false)
                 .maxItemsPerRequest(50)

@@ -61,9 +61,9 @@ public abstract class IncidentRoomDatabase extends RoomDatabase {
             User u4 = new User("Yves", "Janny",3);
             mUDao.insert(u4);
 
-            Incident i1 = new Incident("Ampoule cassée","une ampoule est cassée en e130",2,1,1,1);
+            Incident i1 = new Incident("Ampoule cassée","une ampoule est cassée en e130",2,1,1,1, null);
             mIDao.insert(i1);
-            Incident i2 = new Incident("Chaise cassée","une chaise est cassée en e133",1,2,1,1);
+            Incident i2 = new Incident("Chaise cassée","une chaise est cassée en e133",1,2,1,1, null);
             mIDao.insert(i2);
             Incident i3 = new Incident("Dossier incomplet","Dossier de l'élève 1558 à remplir",1,1,2,3);
             mIDao.insert(i2);

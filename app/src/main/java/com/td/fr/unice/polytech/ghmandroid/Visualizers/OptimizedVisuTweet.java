@@ -1,26 +1,13 @@
 package com.td.fr.unice.polytech.ghmandroid.Visualizers;
 
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Bundle;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.TextView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.td.fr.unice.polytech.ghmandroid.ImageLoader;
-import com.td.fr.unice.polytech.ghmandroid.NF.Adapter.SubTweetAdapter;
 import com.td.fr.unice.polytech.ghmandroid.R;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.DefaultLogger;
@@ -37,19 +24,18 @@ import com.twitter.sdk.android.core.models.Search;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.services.SearchService;
 import com.twitter.sdk.android.core.services.StatusesService;
-import com.twitter.sdk.android.tweetui.TweetUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import com.twitter.sdk.android.tweetui.TweetView;
 
 import retrofit2.Call;
 
-public class VisuTweet extends AppCompatActivity {
+public class OptimizedVisuTweet extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.activity_optimized_visu_tweet);
+        final LinearLayout linearLayout = (LinearLayout) findViewById(R.id.linear);
 
         TwitterConfig config = new TwitterConfig.Builder(getBaseContext())
                 .logger(new DefaultLogger(Log.DEBUG))
@@ -61,22 +47,8 @@ public class VisuTweet extends AppCompatActivity {
                 "bFbWhSF7yNhS4TyDdYy1pRX5GonxJCtetrJtuduvgLUPb"), 940556535897448448L, "barnabeliqueux");
         TwitterCore.getInstance().getSessionManager().setActiveSession(twitterSession);
 
-        setContentView(R.layout.activity_visu_tweet);
-        final Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        final TextView textView = (TextView) findViewById(R.id.title);
-        final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.details);
-
-        setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setTitle("Détails");
-
-        CollapsingToolbarLayout toolbarLayout = (CollapsingToolbarLayout) findViewById(R.id.toolbar_layout);
-
-        if (!getIntent().getStringExtra("image").equals("none")) {
-            ImageLoader im = new ImageLoader(toolbarLayout, getResources());
-            im.execute(getIntent().getStringExtra("image"));
-        }
-
 
         try {
             final Long id = getIntent().getLongExtra("id", 998203499514073088L);
@@ -87,7 +59,11 @@ public class VisuTweet extends AppCompatActivity {
             call.enqueue(new Callback<Tweet>() {
                 @Override
                 public void success(Result<Tweet> result) {
-                    textView.setText(result.data.text);
+                    linearLayout.addView(new UnclickableTweetView(getApplicationContext(), result.data));
+                    View v = new View(getBaseContext());
+                    v.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
+                    v.setMinimumHeight(5);
+                    linearLayout.addView(v);
                     Log.d("TWEET", result.data.text);
                 }
 
@@ -98,9 +74,6 @@ public class VisuTweet extends AppCompatActivity {
 
             SearchService searchService = twitterApiClient.getSearchService();
             String query = "barnabeliqueux";
-            final List<Tweet> tweets = new ArrayList<>();
-            final SubTweetAdapter adapter = new SubTweetAdapter(getBaseContext());
-            recyclerView.setLayoutManager(new LinearLayoutManager(getBaseContext()));
             Call<Search> search = searchService.tweets(query, null, null, null, null,
                     null, null, null, null, null);
             search.enqueue(new Callback<Search>() {
@@ -108,9 +81,7 @@ public class VisuTweet extends AppCompatActivity {
                 public void success(Result<Search> result) {
                     for (Tweet t: result.data.tweets) {
                         if (t.inReplyToStatusId == id) {
-                            tweets.add(t);
-                            adapter.setTweets(tweets);
-                            recyclerView.setAdapter(adapter);
+                            linearLayout.addView(new UnclickableTweetView(getApplicationContext(), t));
                             Log.i("SEARCH", t.text);
                         }
                     }
@@ -124,18 +95,6 @@ public class VisuTweet extends AppCompatActivity {
         } catch (Exception e) {
             Log.d("Err", "null intent");
         }
-
-
-
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     @Override

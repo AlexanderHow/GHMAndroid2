@@ -37,6 +37,7 @@ public class ImageLoader extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
+        collapsingToolbarLayout.setScrollBarSize(bitmap.getHeight());
         collapsingToolbarLayout.setBackground(new BitmapDrawable(r, bitmap));
     }
 

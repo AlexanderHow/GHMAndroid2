@@ -21,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 
+import com.td.fr.unice.polytech.ghmandroid.NF.Incident;
+
 import java.util.Objects;
 
 
@@ -88,6 +90,10 @@ public class addIncident extends AppCompatActivity {
                     replyIntent.putExtra("URGENCE", urgenceStr);
                     replyIntent.putExtra("USERROLE", userRoleStr);
                     setResult(RESULT_OK, replyIntent);
+                    if (image != null) {
+                        MainActivity.TwitterLoader twitterLoader = new MainActivity.TwitterLoader(getApplicationContext());
+                        twitterLoader.postTweetWithImage(new Incident(titleStr, descriStr, 1, 1, 1, 1), image);
+                    }
                 }
                 finish();
             }

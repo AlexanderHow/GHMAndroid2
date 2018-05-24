@@ -8,12 +8,15 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.td.fr.unice.polytech.ghmandroid.Visualizers.VisuTweet;
+import com.td.fr.unice.polytech.ghmandroid.Visualizers.OptimizedVisuTweet;
 import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.models.MediaEntity;
 import com.twitter.sdk.android.core.models.Tweet;
 import com.twitter.sdk.android.core.models.TweetBuilder;
 import com.twitter.sdk.android.tweetui.CompactTweetView;
 import com.twitter.sdk.android.tweetui.Timeline;
+import com.twitter.sdk.android.tweetui.TweetLinkClickListener;
+import com.twitter.sdk.android.tweetui.TweetMediaClickListener;
 import com.twitter.sdk.android.tweetui.TweetTimelineRecyclerViewAdapter;
 
 public class TwitterAdapter extends TweetTimelineRecyclerViewAdapter {
@@ -37,7 +40,7 @@ public class TwitterAdapter extends TweetTimelineRecyclerViewAdapter {
             public boolean onTouch(View view, MotionEvent motionEvent) {
                 if (motionEvent.getAction() == MotionEvent.ACTION_UP) {
                     Log.i("TWEET", compactTweetView.getTweetId() + "");
-                    Intent intent = new Intent(context, VisuTweet.class);
+                    Intent intent = new Intent(context, OptimizedVisuTweet.class);
                     intent.putExtra("id", compactTweetView.getTweetId());
                     intent.putExtra("title", compactTweetView.getTweet().text);
                     try {
@@ -51,7 +54,36 @@ public class TwitterAdapter extends TweetTimelineRecyclerViewAdapter {
                 return false;
             }
         });
+        compactTweetView.setTweetMediaClickListener(new TweetMediaClickListener() {
+            @Override
+            public void onMediaEntityClick(Tweet tweet, MediaEntity entity) {
+                Intent intent = new Intent(context, OptimizedVisuTweet.class);
+                intent.putExtra("id", compactTweetView.getTweetId());
+                intent.putExtra("title", compactTweetView.getTweet().text);
+                try {
+                    intent.putExtra("image", compactTweetView.getTweet().extendedEntities.media.get(0).mediaUrl);
+                    Log.i("Intent", compactTweetView.getTweet().extendedEntities.media.get(0).mediaUrl);
+                } catch (Exception e) {intent.putExtra("image", "none");}
+                context.startActivity(intent);
+            }
+        });
+        compactTweetView.setTweetLinkClickListener(new TweetLinkClickListener() {
+            @Override
+            public void onLinkClick(Tweet tweet, String url) {
+                Intent intent = new Intent(context, OptimizedVisuTweet.class);
+                intent.putExtra("id", compactTweetView.getTweetId());
+                intent.putExtra("title", compactTweetView.getTweet().text);
+                try {
+                    intent.putExtra("image", compactTweetView.getTweet().extendedEntities.media.get(0).mediaUrl);
+                    Log.i("Intent", compactTweetView.getTweet().extendedEntities.media.get(0).mediaUrl);
+                } catch (Exception e) {intent.putExtra("image", "none");}
+                context.startActivity(intent);
+            }
+        });
         return new TweetViewHolder(compactTweetView);
     }
+
+
+
 
 }

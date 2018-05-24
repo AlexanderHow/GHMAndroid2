@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.td.fr.unice.polytech.ghmandroid">
 
-
-    <uses-feature android:name="android.hardware.camera"
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="true" />
 
     <application
@@ -30,7 +30,7 @@
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.td.fr.unice.polytech.ghmandroid.MainActivity"/>
+                android:value="com.td.fr.unice.polytech.ghmandroid.MainActivity" />
         </activity>
         <activity android:name=".TwitterExperiments" />
         <activity android:name=".visuIncidentBasic" />
@@ -40,6 +40,12 @@
             android:label="@string/title_activity_visu_tweet"
             android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+        <activity android:name=".Visualizers.OptimizedVisuTweet"
+            android:parentActivityName=".MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />

@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -41,12 +42,19 @@ import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.twitter.sdk.android.core.models.Media;
 import com.twitter.sdk.android.core.models.Tweet;
+import com.twitter.sdk.android.core.services.MediaService;
 import com.twitter.sdk.android.core.services.StatusesService;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
 import retrofit2.Call;
 
 public class MainActivity extends AppCompatActivity {
@@ -257,6 +265,55 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void failure(TwitterException exception) {
                     Log.i("TWITTER", "Failure");
+                }
+            });
+        }
+
+        public void postTweetWithImage(final Incident incident, Bitmap bmp) {
+            TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+            MediaService mediaService = twitterApiClient.getMediaService();
+            File dir = context.getFilesDir();
+            File image = new File(dir, "temp.png");
+            OutputStream os;
+            try {
+                os = new FileOutputStream(image);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, os);
+                os.flush();
+                os.close();
+            } catch (Exception e) {
+                Log.e("error", "error");
+            }
+
+            RequestBody request = RequestBody.create(MediaType.parse("image/*"), image);
+            Call<Media> upload = mediaService.upload(request, null, null);
+            upload.enqueue(new Callback<Media>() {
+                @Override
+                public void success(Result<Media> result) {
+                    TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
+                    StatusesService statusesService = twitterApiClient.getStatusesService();
+                    Call<Tweet> touite = statusesService.update(incident.getTitre(), null, null,
+                            null, null, null, null, null, result.data.mediaIdString);
+                    touite.enqueue(new Callback<Tweet>() {
+                        @Override
+                        public void success(Result<Tweet> result) {
+                            Long id = result.data.getId();
+                            subTweet(id, incident.getUrgence() + "");
+                            subTweet(id, incident.getAvancement() + "");
+                            subTweet(id, incident.getUserDeposant() + "");
+                            Toast.makeText(context, "Posté !", Toast.LENGTH_SHORT).show();
+                            Log.i("TWITTER", "Successfully tweeted");
+                        }
+
+                        @Override
+                        public void failure(TwitterException exception) {
+                            Log.i("TWITTER", "Failure with image");
+                        }
+                    });
+                }
+
+                @Override
+                public void failure(TwitterException exception) {
+
                 }
             });
         }
